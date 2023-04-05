@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% from 'bootstrap4/form.html' import render_form, render_field %}
+
+{% block styles %}
+  {{ super() }}
+  <!-- Custom fonts for this template -->
+  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <!-- Custom styles for this template -->
+  <link href="{{ url_for('static', filename='css/clean-blog.min.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block title %} {{post.title}} {% endblock %}
+{% block content %}
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('{{post.img_url}}')">
+	<div class="overlay"></div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 col-md-10 mx-auto">
+				<div class="post-heading">
+					<h1>{{post.title}}</h1>
+					<h2 class="subheading">{{post.subtitle}}</h2>
+					<span class="meta">Posted by
+              <a href="#">{{post.author}}</a>
+              on {{post.date}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Post Content -->
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <p>
+            {{ post.body | safe }}
+          </p>
+          {% if current_user.id == 1 %}
+           <div class="clearfix">
+               <a class="btn btn-primary float-right" href="{{url_for('edit_post', id=post.id)}}">Edit Post</a>
+           </div>
+           {% endif %}
+
+            <form action="{{ url_for ('show_post', id=post.id) }}" method="post" novalidate>
+                {{ render_form(form) }}
+              </form>
+            {{ ckeditor.load()  }}
+
+           <!-- Comments Area -->
+
+          </div>
+          <div class="col-lg-8 col-md-10 mx-auto comment">
+               {% for comment in post.comments %}
+               <ul class="commentList">
+                   <li style="list-style-type: None;">
+                       <div class="commenterImage">
+                            <img src="{{ comment.comment_author.email | gravatar }}" />
+                       </div>
+                       <div class="commentText">
+                           {{ comment.text | safe }}
+                           <span class="date sub-text"> {{comment.comment_author.name}} </span>
+                       </div>
+                   </li>
+               </ul>
+               {% endfor %}
+           </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <hr>
+
+{% endblock %}
